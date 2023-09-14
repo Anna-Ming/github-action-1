@@ -1,33 +1,11 @@
-@minLength(3)
-@maxLength(11)
-param storagePrefix string
+param resourceGroupLocation string = resourceGroup().location
+param storageAccountName string = 'teambgithub1'
 
-@allowed([
-  'Standard_LRS'
-  'Standard_GRS'
-  'Standard_RAGRS'
-  'Standard_ZRS'
-  'Premium_LRS'
-  'Premium_ZRS'
-  'Standard_GZRS'
-  'Standard_RAGZRS'
-])
-param storageSKU string = 'Standard_LRS'
-
-param location string = resourceGroup().location
-
-var uniqueStorageName = '${storagePrefix}${uniqueString(resourceGroup().id)}'
-
-resource stg 'Microsoft.Storage/storageAccounts@2021-04-01' = {
-  name: uniqueStorageName
-  location: location
-  sku: {
-    name: storageSKU
-  }
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+  name: storageAccountName
+  location: resourceGroupLocation
   kind: 'StorageV2'
-  properties: {
-    supportsHttpsTrafficOnly: true
+  sku: {
+    name: 'Standard_LRS'
   }
 }
-
-output storageEndpoint object = stg.properties.primaryEndpoints
